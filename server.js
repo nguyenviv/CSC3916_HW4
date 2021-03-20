@@ -171,7 +171,7 @@ router.route('/movies')
         }
     });
 
-router.route('/reviews')
+/*router.route('/reviews')
 
     //Retrieve reviews
     .get(function (req, res) {
@@ -203,7 +203,7 @@ router.route('/reviews')
                 res.json({ message: 'Review successfully created.' });
             });
         }
-    });
+    });*/
 
 
 app.use('/', router);
