@@ -42,7 +42,7 @@ function getJSONObjectForMovieRequirement(req) {
     return json;
 }
 
-router.post('/signup', function(req, res) {
+/*router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
@@ -62,7 +62,7 @@ router.post('/signup', function(req, res) {
             res.json({success: true, msg: 'Successfully created new user.'})
         });
     }
-});
+});*/
 
 router.post('/signin', function (req, res) {
     var userNew = new User();
@@ -87,6 +87,7 @@ router.post('/signin', function (req, res) {
     })
 });
 
+/*
 router.route('/movies')
 
     //Retrieve movies
@@ -170,8 +171,21 @@ router.route('/movies')
             //})
         }
     });
+*/
 
-/*router.route('/reviews')
+db.movies.aggregate([
+    {
+        $lookup:
+            {
+                from: "reviews",
+                localField: "title",
+                foreignField: "movieTitle",
+                as: "movies reviews"
+            }
+    }
+])
+
+router.route('/reviews')
 
     //Retrieve reviews
     .get(function (req, res) {
@@ -189,11 +203,12 @@ router.route('/movies')
 
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
-        if (!req.body.reviewer || !req.body.quote || !req.body.rating) {
-            res.json({success: false, msg: 'Please pass Reviewer Name, Quote, and Rating'});
+        if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
+            res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
         }
         else {
             var review = new Review();
+            review.movieTitle = req.body.movieTitle;
             review.reviewer = req.body.reviewer;
             review.quote = req.body.quote;
             review.rating = req.body.rating;
@@ -203,7 +218,7 @@ router.route('/movies')
                 res.json({ message: 'Review successfully created.' });
             });
         }
-    });*/
+    });
 
 
 app.use('/', router);

@@ -16,10 +16,10 @@ mongoose.set('useCreateIndex', true);
 
 //reviews schema
 var ReviewsSchema = new Schema({
-    reviews: [
-        { reviewer: String, required: true, index: { unique: true } },
-        { quote: String, required: true },
-        { rating: Number, min:[1, 'Must be at least 1'], max:[5,'Must be at most 5'], required: true} ]
+    movieTitle: { type: String, required: true, index: { unique: true }},
+    reviewer: {type: String, required: true},
+    quote: {type: String, required: true},
+    rating: {type: Number, min:[1, 'Must be at least 1'], max:[5,'Must be at most 5'], required: true}
 });
 
 //return the model to server
