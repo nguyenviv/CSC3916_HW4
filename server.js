@@ -42,28 +42,6 @@ function getJSONObjectForMovieRequirement(req) {
     return json;
 }
 
-/*router.post('/signup', function(req, res) {
-    if (!req.body.username || !req.body.password) {
-        res.json({success: false, msg: 'Please include both username and password to signup.'})
-    } else {
-        var user = new User();
-        user.name = req.body.name;
-        user.username = req.body.username;
-        user.password = req.body.password;
-
-        user.save(function(err){
-            if (err) {
-                if (err.code == 11000)
-                    return res.json({ success: false, message: 'A user with that username already exists.'});
-                else
-                    return res.json(err);
-            }
-
-            res.json({success: true, msg: 'Successfully created new user.'})
-        });
-    }
-});*/
-
 router.post('/signin', function (req, res) {
     var userNew = new User();
     userNew.username = req.body.username;
@@ -86,6 +64,30 @@ router.post('/signin', function (req, res) {
         })
     })
 });
+
+router.route('/movies/:movie_title')
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+            Movie.findOne({title: req.params.movie_title}, function (err, movie) {
+                if (err) {
+                    return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
+                } else if (!movie) {
+                    return res.status(403).json({success: false, message: "Unable to find title passed in."});
+                } else {
+
+                    Movie.aggregate()
+                        .match({_id: mongoose.Types.ObjectId(movie._id)})
+                        .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
+                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
+                        .exec(function (err, mov) {
+                            if (err) throw err;
+                            res.json({message: 'GET reviews.'});
+                        })
+                }
+            })
+        }
+        });
 
 /*db.movies.aggregate([
     {
