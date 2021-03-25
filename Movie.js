@@ -22,5 +22,24 @@ var MovieSchema = new Schema({
     actors: [{ actorName: String, characterName: String }]
 });
 
+MovieSchema.method.aggregate([
+    {
+    $lookup:
+    {
+        from: "reviews",
+        localField: "title",
+        foreignField: "movieTitle",
+        as: "movies reviews"
+    }
+    }
+])
+
+MovieSchema.methods.compareTitle = function (title, callback) {
+    var movie = this;
+
+    bcrypt.compare(title, movie.title, function(err, isMatch) {
+        callback(isMatch);
+    })
+}
 //return the model to server
 module.exports = mongoose.model('Movie', MovieSchema);
