@@ -13,7 +13,7 @@ var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
 var Movie = require('./Movie');
-var Review = require('./Reviews');
+//var Review = require('./Reviews');
 
 var app = express();
 app.use(cors());
@@ -99,7 +99,7 @@ router.post('/signin', function (req, res) {
     }
 ])*/
 
-router.route('/reviews')
+/*router.route('/reviews')
 
     //Retrieve reviews
     .get(function (req, res) {
@@ -134,7 +134,7 @@ router.route('/reviews')
                 res.json({ message: 'Review successfully created.' });
             });
         }
-    });
+    });*/
 
 
 app.use('/', router);
