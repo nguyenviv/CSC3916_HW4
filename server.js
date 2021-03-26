@@ -102,16 +102,28 @@ router.route('/movies/:movies_title')
                 res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
             }
             else {
-                var review = new Review();
-                review.movieTitle = req.body.movieTitle;
-                review.reviewer = req.body.reviewer;
-                review.quote = req.body.quote;
-                review.rating = req.body.rating;
+                Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+                    if (err) {
+                        return res.status(403).json({
+                            success: false,
+                            message: "Unable to get reviews for title passed in"
+                        });
+                    } else if (!movies) {
+                        return res.status(403).json({success: false, message: "Unable to find title passed in."});
+                    } else {
 
-                review.save(function(err, reviews) {
-                    if (err) throw err;
-                    res.json({ message: 'Review successfully saved.' });
-                });
+                        var review = new Review();
+                        review.movieTitle = req.params.movies_title;
+                        review.reviewer = req.body.reviewer;
+                        review.quote = req.body.quote;
+                        review.rating = req.body.rating;
+
+                        review.save(function (err, reviews) {
+                            if (err) throw err;
+                            res.json({message: 'Review successfully saved.'});
+                        });
+                    }
+                })
             }
         });
 
