@@ -65,22 +65,22 @@ router.post('/signin', function (req, res) {
     })
 });
 
-router.route('/movies/:movie_title')
+router.route('/movies/:title')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Movie.findOne({title: req.params.movie_title}, function (err, movie) {
+            Movie.findOne({title: req.params.title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
-                } else if (!movie) {
+                } else if (!movies) {
                     return res.status(403).json({success: false, message: "Unable to find title passed in."});
                 } else {
 
                     Movie.aggregate()
-                        .match({_id: mongoose.Types.ObjectId(movie._id)})
-                        .lookup({from: 'reviews', localField: '_id', foreignField: 'movie_id', as: 'reviews'})
+                        .match({_id: mongoose.Types.ObjectId(movies._id)})
+                        .lookup({from: 'reviews', localField: '_id', foreignField: 'movies_id', as: 'reviews'})
                         .addFields({averaged_rating: {$avg: "$reviews.rating"}})
-                        .exec(function (err, movie) {
+                        .exec(function (err, movies) {
                             if (err) throw err;
                             res.json({message: 'GET reviews.'});
                         })
