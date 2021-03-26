@@ -65,7 +65,7 @@ router.post('/signin', function (req, res) {
     })
 });
 
-router.route('/movies/')
+router.route('/movies/:title')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
@@ -78,7 +78,7 @@ router.route('/movies/')
 
                     Movie.aggregate()
                         .match({_id: mongoose.Types.ObjectId(movies._id)})
-                        .lookup({from: 'reviews', localField: '_id', foreignField: 'movies_id', as: 'reviews'})
+                        .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
                         .addFields({averaged_rating: {$avg: "$reviews.rating"}})
                         .exec(function (err, movies) {
                             if (err) throw err;
