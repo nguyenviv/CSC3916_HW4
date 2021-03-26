@@ -66,6 +66,7 @@ router.post('/signin', function (req, res) {
 });
 
 router.route('/movies/:movies_title')
+    //Retrieve reviews
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
@@ -86,14 +87,32 @@ router.route('/movies/:movies_title')
                         })
                 }
             })
-        }
-        else {
+        } else {
             console.log(movies);
             res = res.status(200);
             /*res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
                 {genre: res.body.genre}, {actors: res.body.actors});*/
             res.json({message: 'No reviews for this movie.'});
         }
+    })
+
+    //Save reviews
+    .post( authJwtController.isAuthenticated, function (req, res) {
+            if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
+                res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
+            }
+            else {
+                var review = new Review();
+                review.movieTitle = req.body.movieTitle;
+                review.reviewer = req.body.reviewer;
+                review.quote = req.body.quote;
+                review.rating = req.body.rating;
+
+                review.save(function(err, reviews) {
+                    if (err) throw err;
+                    res.json({ message: 'Review successfully saved.' });
+                });
+            }
         });
 
 /*db.movies.aggregate([
