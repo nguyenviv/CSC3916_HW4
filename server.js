@@ -78,7 +78,7 @@ router.route('/movies/:title')
 
                     Movie.aggregate()
                         .match({title: mongoose.Types.ObjectId(movies.title)})
-                        .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
+                        .lookup({from: 'reviews', localField: 'title', foreignField: 'movieTitle', as: 'reviews'})
                         .addFields({averaged_rating: {$avg: "$reviews.rating"}})
                         .exec(function (err, movies) {
                             if (err) throw err;
