@@ -65,11 +65,11 @@ router.post('/signin', function (req, res) {
     })
 });
 
-router.route('/movies/:movies_title')
+router.route('/movies/:title')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+            Movie.findOne({title: req.params.title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
                 } else if (!movies) {
