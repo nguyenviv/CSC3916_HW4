@@ -65,11 +65,13 @@ router.post('/signin', function (req, res) {
     })
 });
 
-router.route('/movies/:title')
+router.route('/movies')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+            var movieNew = new Movie();
+            movieNew.title = req.body.title;
+            Movie.findOne({title: movieNew.title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
                 } else if (!movies) {
@@ -86,6 +88,13 @@ router.route('/movies/:title')
                         })
                 }
             })
+        }
+        else {
+            console.log(movies);
+            res = res.status(200);
+            /*res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
+                {genre: res.body.genre}, {actors: res.body.actors});*/
+            res.json({message: 'No reviews for this movie.'});
         }
         });
 
