@@ -171,6 +171,7 @@ router.route('/reviews')
             review.save(function(err, reviews) {
                 if (err) throw err;
                 res.json({ message: 'Review successfully created.' });
+                console.log(reviews);
             });
         }
     });
