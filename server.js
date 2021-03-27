@@ -149,7 +149,7 @@ router.route('/reviews')
             Review.find({}, function (err,reviews) {
                 if (err) throw err;
                 else
-                    console.log(reviews);
+                    //console.log(reviews);
                     res = res.status(200);
                     res.json({success: true, msg: 'GET reviews.'});
             });
@@ -171,7 +171,7 @@ router.route('/reviews')
             review.save(function(err, reviews) {
                 if (err) throw err;
                 res.json({ message: 'Review successfully created.' });
-                //console.log(review);
+                //console.log(reviews);
             });
         }
     });
