@@ -133,9 +133,9 @@ router.route('/reviews')
     .get(function (req, res) {
             var review = new Review();
             review.movieTitle = req.body.movieTitle;
-            Movie.compareTitle(req.body.title, function (isMatch) {
+            Movie.compare(req.body.title, function (isMatch) {
                 if (isMatch) {
-                    if (req.json({reviews: true})) {
+                    if (req.query.reviews === "true") {
                         console.log(reviews);
                         res = res.status(200);
                         res.json({success: true, msg: 'GET reviews.'});
@@ -145,7 +145,7 @@ router.route('/reviews')
 
     })
 
-    .get(function (req, res) {
+   /* .get(function (req, res) {
             Review.find({}, function (err,reviews) {
                 if (err) throw err;
                 else
@@ -154,7 +154,7 @@ router.route('/reviews')
                     res.json({success: true, msg: 'GET reviews.'});
             });
         }
-    )
+    )*/
 
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
