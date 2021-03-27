@@ -127,22 +127,10 @@ router.route('/movies/:movies_title')
             }
         });
 
-/*db.movies.aggregate([
-    {
-        $lookup:
-            {
-                from: "reviews",
-                localField: "title",
-                foreignField: "movieTitle",
-                as: "movies reviews"
-            }
-    }
-])*/
 
-/*router.route('/reviews')
-
+router.route('/reviews')
     //Retrieve reviews
-    .get(function (req, res) {
+    /*.get(function (req, res) {
             var review = new Review();
             review.movieTitle = req.body.movieTitle;
             Movie.compareTitle(req.body.title, function (isMatch) {
@@ -155,7 +143,18 @@ router.route('/movies/:movies_title')
                 }
                 });
 
-    })
+    })*/
+
+    .get(function (req, res) {
+            Reviews.find({}, function (err,reviews) {
+                if (err) throw err;
+                else
+                    console.log(reviews);
+                res = res.status(200);
+                res.json({success: true, msg: 'GET reviews.'});
+            });
+        }
+    )
 
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
@@ -174,7 +173,7 @@ router.route('/movies/:movies_title')
                 res.json({ message: 'Review successfully created.' });
             });
         }
-    });*/
+    });
 
 
 app.use('/', router);
