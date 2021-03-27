@@ -133,14 +133,21 @@ router.route('/reviews')
     .get(function (req, res) {
             var review = new Review();
             review.movieTitle = req.body.movieTitle;
-            Movie.compare(req.body.title, function (isMatch) {
-                if (isMatch) {
-                    if (req.query.reviews === "true") {
-                        console.log(reviews);
-                        res = res.status(200);
-                        res.json({success: true, msg: 'GET reviews.'});
-                    }
+            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+                if (err) {
+                    return res.status(403).json({
+                        success: false,
+                        message: "Unable to get reviews for title passed in"
+                    })
                 }
+
+                else if (req.query.reviews === "true") {
+
+                    console.log(reviews);
+                    res = res.status(200);
+                    res.json({success: true, msg: 'GET reviews.'});
+                }
+
                 });
 
     })
