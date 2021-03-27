@@ -150,8 +150,8 @@ router.route('/reviews')
                 if (err) throw err;
                 else
                     console.log(reviews);
-                res = res.status(200);
-                res.json({success: true, msg: 'GET reviews.'});
+                    res = res.status(200);
+                    res.json({success: true, msg: 'GET reviews.'});
             });
         }
     )
@@ -171,7 +171,7 @@ router.route('/reviews')
             review.save(function(err, reviews) {
                 if (err) throw err;
                 res.json({ message: 'Review successfully created.' });
-                console.log(reviews);
+                console.log(review);
             });
         }
     });
