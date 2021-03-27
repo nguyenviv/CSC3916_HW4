@@ -130,7 +130,7 @@ router.route('/movies/:movies_title')
 
 router.route('/reviews')
     //Retrieve reviews
-    .get(function (req, res) {
+    /*.get(function (req, res) {
             var review = new Review();
             review.movieTitle = req.body.movieTitle;
             Movie.findOne({title: req.params.movies_title}, function (err, movies) {
@@ -150,18 +150,19 @@ router.route('/reviews')
 
                 });
 
-    })
+    })*/
 
-   /* .get(function (req, res) {
+    //Get reviews
+    .get(function (req, res) {
             Review.find({}, function (err,reviews) {
                 if (err) throw err;
                 else
-                    //console.log(reviews);
-                    res = res.status(200);
-                    res.json({success: true, msg: 'GET reviews.'});
+                    console.log(reviews);
+                res = res.status(200);
+                res.json({success: true, msg: 'GET reviews.'});
             });
         }
-    )*/
+    )
 
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
