@@ -69,8 +69,9 @@ router.route('/movies/:movies_title')
     //Retrieve reviews
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
-
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+            var movie = new Movie();
+            movie.title = req.params.movies_title;
+            Movie.findOne({title: movie.title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
                 } else if (!movies) {
@@ -90,9 +91,9 @@ router.route('/movies/:movies_title')
         } else {
             console.log(movies);
             res = res.status(200);
-            /*res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
-                {genre: res.body.genre}, {actors: res.body.actors});*/
-            res.json({message: 'No reviews for this movie.'});
+            res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
+                {genre: res.body.genre}, {actors: res.body.actors});
+            //res.json({message: 'No reviews for this movie.'});
         }
     })
 
