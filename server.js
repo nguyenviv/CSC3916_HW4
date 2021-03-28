@@ -69,9 +69,8 @@ router.route('/movies/:movies_title')
     //Retrieve reviews
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
-            var movie = new Movie();
-            movie.title = req.params.movies_title;
-            Movie.findOne({title: movie.title}, function (err, movies) {
+
+            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
                 } else if (!movies) {
@@ -93,12 +92,12 @@ router.route('/movies/:movies_title')
             res = res.status(200);
             res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
                 {genre: res.body.genre}, {actors: res.body.actors});
-            //res.json({message: 'No reviews for this movie.'});
+            res.json({message: 'Reviews not shown.'});
         }
-    })
+    });
 
     //Save reviews
-    .post( authJwtController.isAuthenticated, function (req, res) {
+    /*.post( authJwtController.isAuthenticated, function (req, res) {
             if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
                 res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
             }
@@ -126,12 +125,12 @@ router.route('/movies/:movies_title')
                     }
                 })
             }
-        });
+        });*/
 
 
 router.route('/reviews')
     //Retrieve reviews
-    .get(function (req, res) {
+    /*.get(function (req, res) {
             var review = new Review();
             review.movieTitle = req.body.movieTitle;
             Review.findOne({movieTitle: review.movieTitle}, function (err, reviews) {
@@ -141,7 +140,6 @@ router.route('/reviews')
                         message: "Title not found"
                     })
                 }
-
                 else if (req.query.reviews === "true") {
 
                     console.log(reviews);
@@ -151,37 +149,32 @@ router.route('/reviews')
 
                 });
 
-    })
+    })*/
 
-    //Get reviews
-    /*.get(function (req, res) {
-            Review.find({}, function (err,reviews) {
-                if (err) throw err;
-                else
-                    console.log(reviews);
-                res = res.status(200);
-                res.json({success: true, msg: 'GET reviews.'});
-            });
-        }
-    )*/
-
-    //Save reviews
+   //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
         if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
         }
         else {
-            var review = new Review();
-            review.movieTitle = req.body.movieTitle;
-            review.reviewer = req.body.reviewer;
-            review.quote = req.body.quote;
-            review.rating = req.body.rating;
+            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+                if (err) throw err
+                else if (!movies) {
+                    return res.status(403).json({success: false, message: "Unable to find title passed in."});
+                } else {
+                    var review = new Review();
+                    review.movieTitle = req.body.movieTitle;
+                    review.reviewer = req.body.reviewer;
+                    review.quote = req.body.quote;
+                    review.rating = req.body.rating;
 
-            review.save(function(err, reviews) {
-                if (err) throw err;
-                res.json({ message: 'Review successfully created.' });
-                //console.log(reviews);
-            });
+                    review.save(function (err, reviews) {
+                        if (err) throw err;
+                        res.json({message: 'Review successfully created.'});
+                        //console.log(reviews);
+                    })
+                }
+            })
         }
     });
 
