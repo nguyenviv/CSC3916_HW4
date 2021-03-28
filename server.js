@@ -133,7 +133,7 @@ router.route('/reviews')
     .get(function (req, res) {
             //var review = new Review();
             //review.movieTitle = req.body.movieTitle;
-            Review.findOne({movieTitle: req.params.movieTitle}, function (err, reviews) {
+            Review.findOne({movieTitle: req.query.movieTitle}, function (err, reviews) {
                 if (err) {
                     return res.status(403).json({
                         success: false,
