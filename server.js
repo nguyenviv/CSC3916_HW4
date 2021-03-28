@@ -130,14 +130,14 @@ router.route('/movies/:movies_title')
 
 router.route('/reviews')
     //Retrieve reviews
-    /*.get(function (req, res) {
-            var review = new Review();
-            review.movieTitle = req.body.movieTitle;
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+    .get(function (req, res) {
+            //var review = new Review();
+            //review.movieTitle = req.body.movieTitle;
+            Review.findOne({title: req.params.movies_title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({
                         success: false,
-                        message: "Unable to get reviews for title passed in"
+                        message: "Title not found"
                     })
                 }
 
@@ -150,10 +150,10 @@ router.route('/reviews')
 
                 });
 
-    })*/
+    })
 
     //Get reviews
-    .get(function (req, res) {
+    /*.get(function (req, res) {
             Review.find({}, function (err,reviews) {
                 if (err) throw err;
                 else
@@ -162,7 +162,7 @@ router.route('/reviews')
                 res.json({success: true, msg: 'GET reviews.'});
             });
         }
-    )
+    )*/
 
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
