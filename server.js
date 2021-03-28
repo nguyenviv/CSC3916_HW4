@@ -4,6 +4,7 @@ File: Server.js
 Description: Web API scaffolding for Movie API
  */
 
+var mongoose = require('mongoose');
 var express = require('express');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -42,6 +43,28 @@ function getJSONObjectForMovieRequirement(req) {
     return json;
 }
 
+router.post('/signup', function(req, res) {
+    if (!req.body.username || !req.body.password) {
+        res.json({success: false, msg: 'Please include both username and password to signup.'})
+    } else {
+        var user = new User();
+        user.name = req.body.name;
+        user.username = req.body.username;
+        user.password = req.body.password;
+
+        user.save(function(err){
+            if (err) {
+                if (err.code == 11000)
+                    return res.json({ success: false, message: 'A user with that username already exists.'});
+                else
+                    return res.json(err);
+            }
+
+            res.json({success: true, msg: 'Successfully created new user.'})
+        });
+    }
+});
+
 router.post('/signin', function (req, res) {
     var userNew = new User();
     userNew.username = req.body.username;
@@ -77,13 +100,25 @@ router.route('/movies/:movies_title')
                     return res.status(403).json({success: false, message: "Unable to find title passed in."});
                 } else {
 
-                    Movie.aggregate()
+                    /*Movie.aggregate()
                         .match({_id: mongoose.Types.ObjectId(movies._id)})
                         .lookup({from: 'reviews', localField: '_id', foreignField: 'movies_id', as: 'reviews'})
                         .addFields({averaged_rating: {$avg: "$reviews.rating"}})
                         .exec(function (err, movies) {
                             if (err) throw err;
                             res.json({message: 'GET reviews.'});
+                        })*/
+                    Movie.aggregate()
+                        .match({_id: mongoose.Types.ObjectId(movies._id)})
+                        .lookup({from: 'reviews', localField: '_id', foreignField: 'movies_id', as: 'reviews'})
+                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
+                        .exec(function (err, movies) {
+                            if (err) {
+                                res.status(500).send(err);
+                            }
+                            else {
+                                res.json(movies);
+                            }
                         })
                 }
             })
