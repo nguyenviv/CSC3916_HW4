@@ -123,10 +123,10 @@ router.route('/movies/:movies_title')
                 }
             })
         } else {
-            console.log(movies);
+            //console.log(movies);
             res = res.status(200);
-            res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
-                {genre: res.body.genre}, {actors: res.body.actors});
+            //res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
+                //{genre: res.body.genre}, {actors: res.body.actors});
             res.json({message: 'Reviews not shown.'});
         }
     });
