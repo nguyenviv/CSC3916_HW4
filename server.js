@@ -131,8 +131,8 @@ router.route('/movies/:movies_title')
 router.route('/reviews')
     //Retrieve reviews
     .get(function (req, res) {
-            //var review = new Review();
-            //review.movieTitle = req.body.movieTitle;
+            var review = new Review();
+            review.movieTitle = req.body.movieTitle;
             Review.findOne({movieTitle: req.body.movieTitle}, function (err, reviews) {
                 if (err) {
                     return res.status(403).json({
