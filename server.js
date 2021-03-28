@@ -73,7 +73,7 @@ router.route('/movies/:movies_title')
             Movie.findOne({title: req.params.movies_title}, function (err, movies) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
-                } else if (!movies) {
+                } else if (!title) {
                     return res.status(403).json({success: false, message: "Unable to find title passed in."});
                 } else {
 
