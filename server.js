@@ -88,6 +88,7 @@ router.post('/signin', function (req, res) {
     })
 });
 
+
 router.route('/movies/:movies_title')
     //Retrieve reviews
     .get(authJwtController.isAuthenticated, function (req, res) {
@@ -187,7 +188,7 @@ router.route('/reviews')
     })*/
 
    //Save reviews
-    .post( authJwtController.isAuthenticated, function (req, res) {
+    /*.post( authJwtController.isAuthenticated, function (req, res) {
         if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
         }
@@ -211,7 +212,7 @@ router.route('/reviews')
                 }
             })
         }
-    });
+    });*/
 
 
 app.use('/', router);
