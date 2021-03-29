@@ -122,11 +122,11 @@ router.route('/movies/:movies_title')
                 //{genre: res.body.genre}, {actors: res.body.actors});
             res.json({message: 'Reviews not shown.'});
         }
-    });
+    })
 
     //Save reviews
-    /*.post( authJwtController.isAuthenticated, function (req, res) {
-            if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
+    .post( authJwtController.isAuthenticated, function (req, res) {
+            if (!req.params.movies_title || !req.body.reviewer || !req.body.quote || !req.body.rating) {
                 res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
             }
             else {
@@ -147,16 +147,20 @@ router.route('/movies/:movies_title')
                         review.rating = req.body.rating;
 
                         review.save(function (err, reviews) {
-                            if (err) throw err;
-                            res.json({message: 'Review successfully saved.'});
-                        });
+                            if (err) {
+                                res.status(500).send(err);
+                            }
+                            else {
+                                res.json(movies);
+                            }
+                        })
                     }
                 })
             }
-        });*/
+        });
 
 
-router.route('/reviews/:movies_title')
+//router.route('/reviews/:movies_title')
     //Retrieve reviews
     /*.get(function (req, res) {
             var review = new Review();
@@ -180,7 +184,7 @@ router.route('/reviews/:movies_title')
     })*/
 
    //Save reviews
-    .post( authJwtController.isAuthenticated, function (req, res) {
+    /*.post( authJwtController.isAuthenticated, function (req, res) {
         if (!req.params.movies_title || !req.body.reviewer || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
         }
@@ -208,7 +212,7 @@ router.route('/reviews/:movies_title')
                 }
             })
         }
-    });
+    });*/
 
 
 app.use('/', router);
