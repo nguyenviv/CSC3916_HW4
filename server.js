@@ -101,14 +101,6 @@ router.route('/movies/:movies_title')
                     return res.status(403).json({success: false, message: "Unable to find title passed in."});
                 } else {
 
-                    /*Movie.aggregate()
-                        .match({_id: mongoose.Types.ObjectId(movies._id)})
-                        .lookup({from: 'reviews', localField: '_id', foreignField: 'movies_id', as: 'reviews'})
-                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
-                        .exec(function (err, movies) {
-                            if (err) throw err;
-                            res.json({message: 'GET reviews.'});
-                        })*/
                     Movie.aggregate()
                         .match({_id: mongoose.Types.ObjectId(movies._id)})
                         .lookup({from: 'reviews', localField: '_id', foreignField: 'movies_id', as: 'reviews'})
@@ -164,7 +156,7 @@ router.route('/movies/:movies_title')
         });*/
 
 
-router.route('/reviews')
+router.route('/reviews/:movies_title')
     //Retrieve reviews
     /*.get(function (req, res) {
             var review = new Review();
@@ -188,31 +180,35 @@ router.route('/reviews')
     })*/
 
    //Save reviews
-    /*.post( authJwtController.isAuthenticated, function (req, res) {
-        if (!req.body.movieTitle || !req.body.reviewer || !req.body.quote || !req.body.rating) {
+    .post( authJwtController.isAuthenticated, function (req, res) {
+        if (!req.params.movies_title || !req.body.reviewer || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
         }
         else {
             Movie.findOne({title: req.params.movies_title}, function (err, movies) {
-                if (err) throw err
-                else if (!movies) {
+                if (err) {
+                    return res.status(403).json({success: false, message: "Unable to post reviews for title passed in"});
+                } else if (!movies) {
                     return res.status(403).json({success: false, message: "Unable to find title passed in."});
                 } else {
                     var review = new Review();
-                    review.movieTitle = req.body.movieTitle;
+                    review.movieTitle = req.params.movies_title;
                     review.reviewer = req.body.reviewer;
                     review.quote = req.body.quote;
                     review.rating = req.body.rating;
 
                     review.save(function (err, reviews) {
-                        if (err) throw err;
-                        res.json({message: 'Review successfully created.'});
-                        //console.log(reviews);
+                        if (err) {
+                            res.status(500).send(err);
+                        }
+                        else {
+                            res.json(movies);
+                        }
                     })
                 }
             })
         }
-    });*/
+    });
 
 
 app.use('/', router);
