@@ -151,7 +151,8 @@ router.route('/movies/:movies_title')
                                 res.status(500).send(err);
                             }
                             else {
-                                res.json(movies);
+                                res.json({ message: 'Review successfully saved.' });
+                                res.json(reviews);
                             }
                         })
                     }
