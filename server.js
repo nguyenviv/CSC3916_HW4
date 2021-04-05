@@ -164,14 +164,16 @@ router.route('/movies')
 
     //Retrieve movies
     .get(function (req, res) {
-            Movie.find({}, function (err,movies) {
-                if (err) throw err;
-                else
-                    // console.log(movies);
-                // res = res.status(200);
-                // res.json({success: true, msg: 'GET movies.'});
-                    res.json(movies);
-            });
+            if (req.query && req.query.reviews && req.query.reviews === "true") {
+                Movie.find({}, function (err, movies) {
+                    if (err) throw err;
+                    else
+                        // console.log(movies);
+                        // res = res.status(200);
+                        // res.json({success: true, msg: 'GET movies.'});
+                        res.json(movies);
+                });
+            }
         }
     )
 
