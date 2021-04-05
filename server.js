@@ -167,9 +167,10 @@ router.route('/movies')
             Movie.find({}, function (err,movies) {
                 if (err) throw err;
                 else
-                    console.log(movies);
-                res = res.status(200);
-                res.json({success: true, msg: 'GET movies.'});
+                    // console.log(movies);
+                // res = res.status(200);
+                // res.json({success: true, msg: 'GET movies.'});
+                    res.json(movies);
             });
         }
     )
