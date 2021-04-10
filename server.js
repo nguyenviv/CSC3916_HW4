@@ -171,6 +171,7 @@ router.route('/movies')
                         // console.log(movies);
                         // res = res.status(200);
                         // res.json({success: true, msg: 'GET movies.'});
+                        Movie.aggregate()
                         res.json(movies);
                 });
             }
