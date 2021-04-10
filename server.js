@@ -163,7 +163,7 @@ router.route('/movies/:movies_title')
 router.route('/movies')
 
     //Retrieve movies
-    .get(function (req, res) {
+    /*.get(function (req, res) {
             if (req.query && req.query.reviews && req.query.reviews === "true") {
                 Movie.find({}, function (err, movies) {
                     if (err) throw err;
@@ -175,7 +175,30 @@ router.route('/movies')
                 });
             }
         }
-    )
+    )*/
+
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+            Movie.find({}, function (err, movies) {
+                if (err)  throw err;
+                else {
+                    Movie.aggregate()
+                        //.match({_id: mongoose.Types.ObjectId(movies._id)})
+                        .lookup({from: 'reviews', localField: 'title', foreignField: 'movieTitle', as: 'reviews'})
+                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
+                        .exec(function (err, movies) {
+                            if (err) {
+                                res.status(500).send(err);
+                            } else {
+                                res.json(movies);
+                            }
+                        })
+                }
+            })
+        }
+    })
+
 
     //Save movies
     .post( authJwtController.isAuthenticated, function (req, res) {
