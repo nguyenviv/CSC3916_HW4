@@ -178,7 +178,7 @@ router.route('/movies')
         }
     )*/
 
-    .get(authJwtController.isAuthenticated, function (req, res) {
+    .get(function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
             //Movie.find({}, function (err, movies) {
