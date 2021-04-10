@@ -163,7 +163,7 @@ router.route('/movies/:movies_title')
 router.route('/movies')
 
     //Retrieve movies
-    .get(function (req, res) {
+    /*.get(function (req, res) {
             if (req.query && req.query.reviews && req.query.reviews === "true") {
                 Movie.find({}, function (err, movies) {
                     if (err) throw err;
@@ -176,12 +176,13 @@ router.route('/movies')
                 });
             }
         }
-    )
+    )*/
 
-    /*.get(authJwtController.isAuthenticated, function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Movie.find({}, function (err, movies) {
+            //Movie.find({}, function (err, movies) {
+            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
                 if (err)  throw err;
                 else {
                     Movie.aggregate()
@@ -199,7 +200,6 @@ router.route('/movies')
             })
         }
     })
-*/
 
     //Save movies
     .post( authJwtController.isAuthenticated, function (req, res) {
