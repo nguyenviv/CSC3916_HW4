@@ -253,7 +253,7 @@ router.route('/playlist')
 
     //Save playlist
     .post( authJwtController.isAuthenticated, function (req, res) {
-        if (!req.body.title) {
+        if (!req.body.songTitle) {
             res.json({success: false, msg: 'Please pass Song Title.'});
         }
         else {
