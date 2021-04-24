@@ -14,8 +14,8 @@ try {
 }
 mongoose.set('useCreateIndex', true);
 
-//like dislike schema
-var Like_Dislike_Schema = new Schema({
+//song review schema
+var SongReviewSchema = new Schema({
     songTitle: { type: String, required: true },
     reviewer: { type: String, required: true },
     like: { type: Number },
@@ -23,4 +23,4 @@ var Like_Dislike_Schema = new Schema({
 });
 
 //return the model to server
-module.exports = mongoose.model('Like_Dislike', Like_Dislike_Schema);
+module.exports = mongoose.model('SongReview', SongReviewSchema);

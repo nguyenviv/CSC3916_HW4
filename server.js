@@ -14,7 +14,7 @@ var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
 var Song = require('./Song');
-var Like_Dislike = require('./Like_Dislike');
+var SongReview = require('./SongReview');
 var Playlist = require('./Playlist');
 
 var app = express();
@@ -104,9 +104,9 @@ router.route('/song/:song_title')
 
                     Song.aggregate()
                         .match({_id: mongoose.Types.ObjectId(song._id)})
-                        .lookup({from: 'like_dislike', localField: 'title', foreignField: 'songTitle', as: 'like_dislike'})
-                        .addFields({total_like: {$avg: "$like_dislike.like"}})
-                        .addFields({total_dislike: {$avg: "$like_dislike.dislike"}})
+                        .lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
+                        .addFields({total_like: {$avg: "$songreview.like"}})
+                        .addFields({total_dislike: {$avg: "$songreview.dislike"}})
                         .exec(function (err, song) {
                             if (err) {
                                 res.status(500).send(err);
@@ -126,7 +126,7 @@ router.route('/song/:song_title')
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
             if (!req.params.song_title || !req.body.reviewer || !req.body.like || !req.body.dislike) {
-                res.json({success: false, msg: 'Please pass Song Title, Reviewer, and Like/Dislike'});
+                res.json({success: false, msg: 'Please pass Song Title, Reviewer, and Song Review'});
             }
             else {
                 Song.findOne({title: req.params.song_title}, function (err, song) {
@@ -139,19 +139,19 @@ router.route('/song/:song_title')
                         return res.status(403).json({success: false, message: "Unable to find title passed in."});
                     } else {
 
-                        var review = new Like_Dislike();
+                        var review = new SongReview();
                         review.songTitle = req.params.song_title;
                         review.reviewer = req.body.reviewer;
                         review.like = req.body.like;
                         review.dislike = req.body.dislike;
 
-                        review.save(function (err, like_dislike) {
+                        review.save(function (err, songreview) {
                             if (err) {
                                 res.status(500).send(err);
                             }
                             else {
-                                res.json({ message: 'Review successfully saved.' });
-                                res.json(like_dislike);
+                                res.json({ message: 'Song review successfully saved.' });
+                                res.json(songreview);
                             }
                         })
                     }
@@ -167,9 +167,9 @@ router.route('/song')
                 if (err)  throw err;
                 else {
                     Song.aggregate()
-                        .lookup({from: 'like_dislike', localField: 'title', foreignField: 'songTitle', as: 'like_dislike'})
-                        .addFields({total_likes: {$total: "$like_dislike.like"}})
-                        .addFields({total_dislikes: {$total: "$like_dislike.dislike"}})
+                        .lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
+                        .addFields({total_likes: {$total: "$songreview.like"}})
+                        .addFields({total_dislikes: {$total: "$songreview.dislike"}})
                         .exec(function (err, song) {
                             if (err) {
                                 res.status(500).send(err);
@@ -237,8 +237,8 @@ router.route('/playlist')
                 else {
                     Playlist.aggregate()
                         .lookup({from: 'playlist', localField: 'title', foreignField: 'songTitle', as: 'playlist'})
-                        .addFields({total_likes: {$total: "$like_dislike.like"}})
-                        .addFields({total_dislikes: {$total: "$like_dislike.dislike"}})
+                        .addFields({total_likes: {$total: "$songreview.like"}})
+                        .addFields({total_dislikes: {$total: "$songreview.dislike"}})
                         .exec(function (err, playlist) {
                             if (err) {
                                 res.status(500).send(err);
