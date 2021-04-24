@@ -14,14 +14,13 @@ try {
 }
 mongoose.set('useCreateIndex', true);
 
-//reviews schema
-var ReviewsSchema = new Schema({
-    //movieTitle: { type: String, required: true, index: { unique: true }},
-    movieTitle: { type: String, required: true},
-    reviewer: {type: String, required: true},
-    quote: {type: String, required: true},
-    rating: {type: Number, min:[1, 'Must be at least 1'], max:[5,'Must be at most 5'], required: true}
+//like dislike schema
+var Like_Dislike_Schema = new Schema({
+    songTitle: { type: String, required: true },
+    reviewer: { type: String, required: true },
+    like: { type: Number },
+    dislike: { type: Number }
 });
 
 //return the model to server
-module.exports = mongoose.model('Reviews', ReviewsSchema);
+module.exports = mongoose.model('Like_Dislike', Like_Dislike_Schema);

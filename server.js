@@ -1,7 +1,7 @@
 /*
-CSC3916 HW2
+CSC3916 Project
 File: Server.js
-Description: Web API scaffolding for Movie API
+Description: Web API scaffolding for Spotify-like API
  */
 
 var mongoose = require('mongoose');
@@ -13,8 +13,9 @@ var authJwtController = require('./auth_jwt');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
-var Movie = require('./Movie');
-var Review = require('./Reviews');
+var Song = require('./Song');
+var Like_Dislike = require('./Like_Dislike');
+var Playlist = require('./Playlist');
 
 var app = express();
 app.use(cors());
@@ -25,7 +26,7 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
-function getJSONObjectForMovieRequirement(req) {
+function getJSONObjectForSongRequirement(req) {
     var json = {
         headers: "No headers",
         key: process.env.UNIQUE_KEY,
@@ -89,70 +90,68 @@ router.post('/signin', function (req, res) {
 });
 
 
-router.route('/movies/:movies_title')
+router.route('/song/:song_title')
     //Retrieve reviews
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+            Song.findOne({title: req.params.song_title}, function (err, song) {
                 if (err) {
-                    return res.status(403).json({success: false, message: "Unable to get reviews for title passed in"});
-                } else if (!movies) {
+                    return res.status(403).json({success: false, message: "Unable to get data for title passed in"});
+                } else if (!song) {
                     return res.status(403).json({success: false, message: "Unable to find title passed in."});
                 } else {
 
-                    Movie.aggregate()
-                        .match({_id: mongoose.Types.ObjectId(movies._id)})
-                        .lookup({from: 'reviews', localField: 'title', foreignField: 'movieTitle', as: 'reviews'})
-                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
-                        .exec(function (err, movies) {
+                    Song.aggregate()
+                        .match({_id: mongoose.Types.ObjectId(song._id)})
+                        .lookup({from: 'like_dislike', localField: 'title', foreignField: 'songTitle', as: 'like_dislike'})
+                        .addFields({total_like: {$avg: "$like_dislike.like"}})
+                        .addFields({total_dislike: {$avg: "$like_dislike.dislike"}})
+                        .exec(function (err, song) {
                             if (err) {
                                 res.status(500).send(err);
                             }
                             else {
-                                res.json(movies);
+                                res.json(song);
                             }
                         })
                 }
             })
         } else {
-            //console.log(movies);
             res = res.status(200);
-            //res.json({title: res.body.title}, {yearReleased: res.body.yearReleased},
-                //{genre: res.body.genre}, {actors: res.body.actors});
             res.json({message: 'Reviews not shown.'});
         }
     })
 
     //Save reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
-            if (!req.params.movies_title || !req.body.reviewer || !req.body.quote || !req.body.rating) {
-                res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
+            if (!req.params.song_title || !req.body.reviewer || !req.body.like || !req.body.dislike) {
+                res.json({success: false, msg: 'Please pass Song Title, Reviewer, and Like/Dislike'});
             }
             else {
-                Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+                Song.findOne({title: req.params.song_title}, function (err, song) {
                     if (err) {
                         return res.status(403).json({
                             success: false,
-                            message: "Unable to get reviews for title passed in"
+                            message: "Unable to get data for title passed in"
                         });
-                    } else if (!movies) {
+                    } else if (!song) {
                         return res.status(403).json({success: false, message: "Unable to find title passed in."});
                     } else {
 
-                        var review = new Review();
-                        review.movieTitle = req.params.movies_title;
+                        var review = new Like_Dislike();
+                        review.songTitle = req.params.song_title;
                         review.reviewer = req.body.reviewer;
-                        review.quote = req.body.quote;
-                        review.rating = req.body.rating;
+                        review.like = req.body.like;
+                        review.dislike = req.body.dislike;
 
-                        review.save(function (err, reviews) {
+                        review.save(function (err, like_dislike) {
                             if (err) {
                                 res.status(500).send(err);
                             }
                             else {
                                 res.json({ message: 'Review successfully saved.' });
-                                res.json(reviews);
+                                res.json(like_dislike);
                             }
                         })
                     }
@@ -160,40 +159,22 @@ router.route('/movies/:movies_title')
             }
         });
 
-router.route('/movies')
-
-    //Retrieve movies
-    /*.get(function (req, res) {
-            if (req.query && req.query.reviews && req.query.reviews === "true") {
-                Movie.find({}, function (err, movies) {
-                    if (err) throw err;
-                    else
-                        // console.log(movies);
-                        // res = res.status(200);
-                        // res.json({success: true, msg: 'GET movies.'});
-                        Movie.aggregate()
-                        res.json(movies);
-                });
-            }
-        }
-    )*/
-
+router.route('/song')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            //Movie.find({}, function (err, movies) {
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
+            Song.findOne({title: req.params.songTitle}, function (err, song) {
                 if (err)  throw err;
                 else {
-                    Movie.aggregate()
-                        //.match({_id: mongoose.Types.ObjectId(movies._id)})
-                        .lookup({from: 'reviews', localField: 'title', foreignField: 'movieTitle', as: 'reviews'})
-                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
-                        .exec(function (err, movies) {
+                    Song.aggregate()
+                        .lookup({from: 'like_dislike', localField: 'title', foreignField: 'songTitle', as: 'like_dislike'})
+                        .addFields({total_likes: {$total: "$like_dislike.like"}})
+                        .addFields({total_dislikes: {$total: "$like_dislike.dislike"}})
+                        .exec(function (err, song) {
                             if (err) {
                                 res.status(500).send(err);
                             } else {
-                                res.json(movies);
+                                res.json(song);
                             }
                         })
                 }
@@ -201,135 +182,99 @@ router.route('/movies')
         }
     })
 
-    //Save movies
+    //Save songs
     .post( authJwtController.isAuthenticated, function (req, res) {
-        if (!req.body.title || !req.body.genre || !req.body.yearReleased) {
-            res.json({success: false, msg: 'Please pass Movie Title, Year released, Genre, and Actors(Actor Name and Character Name)'});
+        if (!req.body.title || !req.body.genre || !req.body.artist) {
+            res.json({success: false, msg: 'Please pass Song Title, Genre, and Artist.'});
         }
         else {
-            if(req.body.actors.length < 3) {
-                res.json({ success: false, message: 'Please include at least three actors.'});
-            }
-            else {
-                var movie = new Movie();
-                movie.title = req.body.title;
-                movie.yearReleased = req.body.yearReleased;
-                movie.genre = req.body.genre;
-                movie.actors = req.body.actors;
-                movie.imageURL = req.body.imageURL;
+            var song = new Song();
+            song.title = req.body.title;
+            song.genre = req.body.genre;
+            song.artist = req.body.artist;
+            song.imageURL = req.body.imageURL;
 
-                movie.save(function(err, movies) {
-                    if (err) {
-                        if (err.code == 11000)
-                            return res.json({ success: false, message: 'A movie with that title already exists.'});
-                        else
-                            return res.send(err);
-                    }
-                    res.json({ message: 'Movie successfully created.' });
-                });
-            }
+            song.save(function(err, song) {
+                if (err) {
+                    if (err.code == 11000)
+                        return res.json({ success: false, message: 'A song with that title already exists.'});
+                    else
+                        return res.send(err);
+                }
+                res.json({ message: 'Song successfully created.' });
+            });
         }
     })
 
-    //Update movies
+    //Update songs
     .put(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title) {
-            res.json({success: false, msg: 'Please pass a Movie Title to update.'});
+            res.json({success: false, msg: 'Please pass a Song Title to update.'});
         } else {
-            Movie.findOne({title: req.body.title}, function (err, movies) {
+            Song.findOne({title: req.body.title}, function (err, song) {
                 if (err) throw err;
                 else {
-                    //var movie = new Movie();
-                    movies.title = req.body.title;
-                    movies.yearReleased = req.body.yearReleased;
-                    movies.genre = req.body.genre;
-                    movies.actors = req.body.actors;
-                    movies.imageURL = req.body.imageURL;
+                    song.title = req.body.title;
+                    song.genre = req.body.genre;
+                    song.artist = req.body.artist;
+                    song.imageURL = req.body.imageURL;
 
-                    movies.save(function (err) {
+                    song.save(function (err) {
                         if (err) throw err;
-                        //else
-                        //console.log(movies);
-                        //res = res.status(200);
-                        res.json({success: true, msg: 'Movie successfully updated.'});
+                        res.json({success: true, msg: 'Song successfully updated.'});
                     })
                 }
             })
         }
     })
 
-    //Delete movies
-    .delete(authJwtController.isAuthenticated, function(req, res) {
+router.route('/playlist')
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+            Playlist.findOne({title: req.params.username}, function (err, playlist) {
+                if (err)  throw err;
+                else {
+                    Playlist.aggregate()
+                        .lookup({from: 'playlist', localField: 'title', foreignField: 'songTitle', as: 'playlist'})
+                        .addFields({total_likes: {$total: "$like_dislike.like"}})
+                        .addFields({total_dislikes: {$total: "$like_dislike.dislike"}})
+                        .exec(function (err, playlist) {
+                            if (err) {
+                                res.status(500).send(err);
+                            } else {
+                                res.json(playlist);
+                            }
+                        })
+                }
+            })
+        }
+    })
+
+    //Save playlist
+    .post( authJwtController.isAuthenticated, function (req, res) {
         if (!req.body.title) {
-            res.json({success: false, msg: 'Please pass a Movie Title to delete.'});
+            res.json({success: false, msg: 'Please pass Song Title.'});
         }
         else {
-            Movie.findOneAndRemove({title: req.body.title}, function (err) {
-                if (err) throw err;
-                res.json({success: true, msg: 'Movie successfully deleted.'});
-            })
-            //}
-            //})
-        }
-    });
+            var playlist = new Playlist();
+            playlist.username = req.body.username;
+            playlist.songTitle = req.body.songTitle;
 
-//router.route('/reviews/:movies_title')
-    //Retrieve reviews
-    /*.get(function (req, res) {
-            var review = new Review();
-            review.movieTitle = req.body.movieTitle;
-            Review.findOne({movieTitle: review.movieTitle}, function (err, reviews) {
+            playlist.save(function(err, playlist) {
                 if (err) {
-                    return res.status(403).json({
-                        success: false,
-                        message: "Title not found"
-                    })
+                    if (err.code == 11000)
+                        return res.json({ success: false, message: 'A song already exists in this playlist.'});
+                    else
+                        return res.send(err);
                 }
-                else if (req.query.reviews === "true") {
-
-                    console.log(reviews);
-                    res = res.status(200);
-                    res.json({success: true, msg: 'GET reviews.'});
-                }
-
-                });
-
-    })*/
-
-   //Save reviews
-    /*.post( authJwtController.isAuthenticated, function (req, res) {
-        if (!req.params.movies_title || !req.body.reviewer || !req.body.quote || !req.body.rating) {
-            res.json({success: false, msg: 'Please pass Movie Title, Reviewer, Quote, and Rating'});
+                res.json({ message: 'Song successfully added.' });
+            });
         }
-        else {
-            Movie.findOne({title: req.params.movies_title}, function (err, movies) {
-                if (err) {
-                    return res.status(403).json({success: false, message: "Unable to post reviews for title passed in"});
-                } else if (!movies) {
-                    return res.status(403).json({success: false, message: "Unable to find title passed in."});
-                } else {
-                    var review = new Review();
-                    review.movieTitle = req.params.movies_title;
-                    review.reviewer = req.body.reviewer;
-                    review.quote = req.body.quote;
-                    review.rating = req.body.rating;
-
-                    review.save(function (err, reviews) {
-                        if (err) {
-                            res.status(500).send(err);
-                        }
-                        else {
-                            res.json(movies);
-                        }
-                    })
-                }
-            })
-        }
-    });*/
+    })
 
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
 module.exports = app; // for testing only
-
 
