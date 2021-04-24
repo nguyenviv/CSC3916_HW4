@@ -18,8 +18,8 @@ mongoose.set('useCreateIndex', true);
 var SongReviewSchema = new Schema({
     songTitle: { type: String, required: true },
     reviewer: { type: String, required: true },
-    like: { type: Number },
-    dislike: { type: Number }
+    like: Number,
+    dislike: Number
 });
 
 //return the model to server
