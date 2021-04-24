@@ -255,21 +255,31 @@ router.route('/playlist')
     .post( authJwtController.isAuthenticated, function (req, res) {
         if (!req.body.songTitle) {
             res.json({success: false, msg: 'Please pass Song Title.'});
-        }
-        else {
-            var playlist = new Playlist();
-            playlist.username = req.body.username;
-            playlist.songTitle = req.body.songTitle;
-
-            playlist.save(function(err, playlist) {
+        } else {
+            Song.findOne({title: req.params.songTitle}, function (err, song) {
                 if (err) {
-                    if (err.code == 11000)
-                        return res.json({ success: false, message: 'A song already exists in this playlist.'});
-                    else
-                        return res.send(err);
+                    return res.status(403).json({
+                        success: false,
+                        message: "Unable to get data for title passed in"
+                    });
+                } else if (!song) {
+                    return res.status(403).json({success: false, message: "Unable to find title passed in."});
+                } else {
+                    var playlist = new Playlist();
+                    playlist.username = req.body.username;
+                    playlist.songTitle = req.body.songTitle;
+
+                    playlist.save(function (err, playlist) {
+                        if (err) {
+                            if (err.code == 11000)
+                                return res.json({success: false, message: 'A song already exists in this playlist.'});
+                            else
+                                return res.send(err);
+                        }
+                        res.json({message: 'Song successfully added to playlist.'});
+                    });
                 }
-                res.json({ message: 'Song successfully added to playlist.' });
-            });
+            })
         }
     })
 
