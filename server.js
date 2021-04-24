@@ -123,7 +123,7 @@ router.route('/song/:song_title')
         }
     })
 
-    //Save reviews
+    //Save song reviews
     .post( authJwtController.isAuthenticated, function (req, res) {
             if (!req.params.song_title || !req.body.reviewer || !req.body.like || !req.body.dislike) {
                 res.json({success: false, msg: 'Please pass Song Title, Reviewer, and Song Review'});
