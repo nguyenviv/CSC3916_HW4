@@ -268,7 +268,7 @@ router.route('/playlist')
                     else
                         return res.send(err);
                 }
-                res.json({ message: 'Song successfully added.' });
+                res.json({ message: 'Song successfully added to playlist.' });
             });
         }
     })
