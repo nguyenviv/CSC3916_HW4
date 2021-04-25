@@ -163,22 +163,14 @@ router.route('/song')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Song.findOne({title: req.params.songTitle}, function (err, song) {
-                if (err)  throw err;
-                else {
-                    Song.aggregate()
-                        .lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
-                        .addFields({total_likes: {$total: "$songreview.like"}})
-                        .addFields({total_dislikes: {$total: "$songreview.dislike"}})
-                        .exec(function (err, song) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                res.json(song);
-                            }
-                        })
-                }
-            })
+            if (req.query && req.query.reviews && req.query.reviews === "true") {
+                Song.find({}, function (err, song) {
+                    if (err) throw err;
+                    else
+                        Song.aggregate()
+                    res.json(song);
+                });
+            }
         }
     })
 
