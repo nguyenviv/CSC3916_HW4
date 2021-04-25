@@ -162,15 +162,12 @@ router.route('/song/:song_title')
 router.route('/song')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
-
-            if (req.query && req.query.reviews && req.query.reviews === "true") {
-                Song.find({}, function (err, song) {
-                    if (err) throw err;
-                    else
-                        Song.aggregate()
-                    res.json(song);
-                });
-            }
+            Song.find({}, function (err, song) {
+                if (err) throw err;
+                else
+                    Song.aggregate()
+                res.json(song);
+            });
         }
     })
 
