@@ -217,7 +217,7 @@ router.route('/song')
         }
     })
 
-router.route('/playlist:song_title')
+router.route('/playlist/:song_title')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
