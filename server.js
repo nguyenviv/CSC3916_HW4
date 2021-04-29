@@ -223,21 +223,22 @@ router.route('/playlist/:username')
     if (req.query && req.query.reviews && req.query.reviews === "true") {
 
         Playlist.findOne({username: req.params.username}, function (err, playlist) {
-            if (err)  throw err;
+            if (err) throw err;
             else {
 
                 Playlist.aggregate()
-                    .lookup({from: 'song', localField: 'title', foreignField: 'songTitle', as: 'playlist'})
+                    .lookup({from: 'playlist', localField: 'songTitle'})
 
                     .exec(function (err, playlist) {
                         if (err) {
                             res.status(500).send(err);
                         } else {
-                            res.json(song);
+                            res.json(playlist);
                         }
                     })
             }
         })
+
     }
 });
 
