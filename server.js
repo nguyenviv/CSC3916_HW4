@@ -218,10 +218,10 @@ router.route('/song')
     })
 
 router.route('/playlist/:song_title')
-    .get(authJwtController.isAuthenticated, function (req, res) {
+    /*.get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Playlist.findOne({username: req.params.username}, function (err, playlist) {
+            Playlist.findOne({username: req.params.username}, function (err, users) {
                 if (err)  throw err;
                 else {
                     Playlist.aggregate()
@@ -237,7 +237,7 @@ router.route('/playlist/:song_title')
                 }
             })
         }
-    })
+    })*/
 
     //Save playlist
     .post( authJwtController.isAuthenticated, function (req, res) {
