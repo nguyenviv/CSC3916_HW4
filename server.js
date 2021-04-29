@@ -215,7 +215,7 @@ router.route('/song')
                 }
             })
         }
-    })
+    });
 
 router.route('/playlist/:song_title')
     /*.get(authJwtController.isAuthenticated, function (req, res) {
@@ -269,7 +269,7 @@ router.route('/playlist/:song_title')
                 }
             })
         }
-    })
+    });
 
 
 app.use('/', router);
