@@ -17,7 +17,7 @@ mongoose.set('useCreateIndex', true);
 //playlist schema
 var PlaylistSchema = new Schema({
     username: { type: String, required: true },
-    songTitle: [{ songTitle: String}]
+    songTitle: { type: String, required: true }
 });
 
 //return the model to server
