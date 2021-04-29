@@ -105,8 +105,8 @@ router.route('/song/:song_title')
                     Song.aggregate()
                         .match({_id: mongoose.Types.ObjectId(song._id)})
                         .lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
-                        .addFields({total_like: {$avg: "$songreview.like"}})
-                        .addFields({total_dislike: {$avg: "$songreview.dislike"}})
+                        .addFields({total_like: {$total: "$songreview.like"}})
+                        .addFields({total_dislike: {$total: "$songreview.dislike"}})
                         .exec(function (err, song) {
                             if (err) {
                                 res.status(500).send(err);
@@ -217,17 +217,16 @@ router.route('/song')
         }
     })
 
-router.route('/playlist')
+router.route('/playlist:song_title')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Playlist.findOne({title: req.params.username}, function (err, playlist) {
+            Playlist.findOne({username: req.params.username}, function (err, playlist) {
                 if (err)  throw err;
                 else {
                     Playlist.aggregate()
-                        .lookup({from: 'playlist', localField: 'title', foreignField: 'songTitle', as: 'playlist'})
-                        .addFields({total_likes: {$total: "$songreview.like"}})
-                        .addFields({total_dislikes: {$total: "$songreview.dislike"}})
+                        .lookup({from: 'users', localField: 'username', foreignField: 'username', as: 'playlist'})
+
                         .exec(function (err, playlist) {
                             if (err) {
                                 res.status(500).send(err);
@@ -242,10 +241,10 @@ router.route('/playlist')
 
     //Save playlist
     .post( authJwtController.isAuthenticated, function (req, res) {
-        if (!req.body.songTitle) {
+        if (!req.params.song_title) {
             res.json({success: false, msg: 'Please pass Song Title.'});
         } else {
-            Song.findOne({title: req.params.songTitle}, function (err, song) {
+            Song.findOne({title: req.params.song_title}, function (err, song) {
                 if (err) {
                     return res.status(403).json({
                         success: false,
@@ -256,7 +255,7 @@ router.route('/playlist')
                 } else {
                     var playlist = new Playlist();
                     playlist.username = req.body.username;
-                    playlist.songTitle = req.body.songTitle;
+                    playlist.songTitle = req.params.song_title;
 
                     playlist.save(function (err, playlist) {
                         if (err) {
