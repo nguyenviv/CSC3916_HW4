@@ -217,27 +217,31 @@ router.route('/song')
         }
     });
 
+// Get playlist
+router.route('/playlist/:username')
+.get(authJwtController.isAuthenticated, function (req, res) {
+    if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+        Playlist.findOne({username: req.params.username}, function (err, playlist) {
+            if (err)  throw err;
+            else {
+
+                Playlist.aggregate()
+                    .lookup({from: 'song', localField: 'title', foreignField: 'songTitle', as: 'playlist'})
+
+                    .exec(function (err, playlist) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            res.json(song);
+                        }
+                    })
+            }
+        })
+    }
+});
+
 router.route('/playlist/:song_title')
-    /*.get(authJwtController.isAuthenticated, function (req, res) {
-        if (req.query && req.query.reviews && req.query.reviews === "true") {
-
-            Playlist.findOne({username: req.params.username}, function (err, users) {
-                if (err)  throw err;
-                else {
-                    Playlist.aggregate()
-                        .lookup({from: 'users', localField: 'username', foreignField: 'username', as: 'playlist'})
-
-                        .exec(function (err, playlist) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                res.json(playlist);
-                            }
-                        })
-                }
-            })
-        }
-    })*/
 
     //Save playlist
     .post( authJwtController.isAuthenticated, function (req, res) {
