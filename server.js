@@ -223,7 +223,7 @@ router.route('/playlist/:username')
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            Playlist.findOne({username: req.params.username}, function (err, playlist) {
+            Playlist.find({username: req.params.username}, function (err, playlist) {
                 if (err) {
                     return res.status(403).json({success: false, message: "Unable to get data for username passed in"});
                 } else if (!playlist) {
