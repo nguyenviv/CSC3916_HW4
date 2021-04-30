@@ -229,8 +229,8 @@ router.route('/playlist/:username')
                 } else if (!playlist) {
                     return res.status(403).json({success: false, message: "Unable to find username passed in."});
                 } else {
-                    Playlist.aggregate()
-                        .match({_username: mongoose.Types.ObjectId(playlist._username)})
+                    /*Playlist.aggregate()
+                        match({_username: mongoose.Types.ObjectId(playlist._username)})
                         //.lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
                         .exec(function (err, playlist) {
                             if (err) {
@@ -239,7 +239,8 @@ router.route('/playlist/:username')
                             else {
                                 res.json(songlist);
                             }
-                        })
+                        })*/
+                    res.json(songlist);
                 }
             })
         } else {
