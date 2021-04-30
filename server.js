@@ -233,6 +233,7 @@ router.route('/playlist/:username')
                         match({_username: mongoose.Types.ObjectId(playlist._username)})
                         //.lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})*/
                     Playlist.aggregate()
+                        match({_username: mongoose.Types.ObjectId(playlist._username)})
                         .exec(function (err, playlist) {
                             if (err) {
                                 res.status(500).send(err);
