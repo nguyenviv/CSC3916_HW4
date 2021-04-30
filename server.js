@@ -160,6 +160,7 @@ router.route('/song/:song_title')
         });
 
 router.route('/song')
+    //Get songs
     .get(authJwtController.isAuthenticated, function (req, res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
             Song.find({}, function (err, song) {
@@ -217,30 +218,35 @@ router.route('/song')
         }
     });
 
-// Get playlist
+// Get playlist by username
 router.route('/playlist/:username')
-.get(authJwtController.isAuthenticated, function (req, res) {
-    if (req.query && req.query.reviews && req.query.reviews === "true") {
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-        Playlist.findOne({username: req.params.username}, function (err, playlist) {
-            if (err) throw err;
-            else {
-
-                Playlist.aggregate()
-                    .lookup({from: 'playlist', localField: 'songTitle'})
-
-                    .exec(function (err, playlist) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.json(playlist);
-                        }
-                    })
-            }
-        })
-
-    }
-});
+            Playlist.findOne({username: req.params.username}, function (err, playlist) {
+                if (err) {
+                    return res.status(403).json({success: false, message: "Unable to get data for username passed in"});
+                } else if (!playlist) {
+                    return res.status(403).json({success: false, message: "Unable to find username passed in."});
+                } else {
+                    Playlist.aggregate()
+                        //.match({_username: mongoose.Types.ObjectId(song._username)})
+                        //.lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
+                        .exec(function (err, playlist) {
+                            if (err) {
+                                res.status(500).send(err);
+                            }
+                            else {
+                                res.json(songlist);
+                            }
+                        })
+                }
+            })
+        } else {
+            res = res.status(200);
+            res.json({message: 'No playlist exists for this user.'});
+        }
+    });
 
 router.route('/playlist/:song_title')
 
