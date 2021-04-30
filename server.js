@@ -240,7 +240,8 @@ router.route('/playlist/:username')
                                 res.json(songlist);
                             }
                         })*/
-                    res.json(songlist);
+                    Playlist.aggregate()
+                    res.json(playlist);
                 }
             })
         } else {
