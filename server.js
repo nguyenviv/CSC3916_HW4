@@ -231,19 +231,19 @@ router.route('/playlist/:username')
                 } else {
                     /*Playlist.aggregate()
                         match({_username: mongoose.Types.ObjectId(playlist._username)})
-                        //.lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})
+                        //.lookup({from: 'songreview', localField: 'title', foreignField: 'songTitle', as: 'songreview'})*/
+                    Playlist.aggregate()
                         .exec(function (err, playlist) {
                             if (err) {
                                 res.status(500).send(err);
                             }
                             else {
-                                res.json(songlist);
+                                res.json(playlist);
                             }
-                        })*/
-                    Playlist.aggregate()
-                    res.json(playlist);
+                        })
                 }
             })
+
         } else {
             res = res.status(200);
             res.json({message: 'No playlist exists for this user.'});
