@@ -218,6 +218,22 @@ router.route('/song')
         }
     });
 
+
+// Get playlists
+router.route('/playlist')
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+            Playlist.find({}, function (err, playlist) {
+                if (err) throw err;
+                else
+                    Song.aggregate()
+                res.json(playlist);
+            });
+        }
+    })
+
+
 // Get playlist by username
 router.route('/playlist/:username')
     .get(authJwtController.isAuthenticated, function (req, res) {
@@ -240,6 +256,7 @@ router.route('/playlist/:username')
         }
     });
 
+// Add songs to playlist
 router.route('/playlist/:song_title')
 
     //Save playlist
